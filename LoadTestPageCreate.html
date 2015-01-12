@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css">
+    <link rel="stylesheet" type="text/css" href="includes/css/angel_list.css">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js"></script>
+    <script>
+
+        $(document).on("pagecreate",function( event, ui) {
+
+            var sponsorGuid = null;
+            var angelType = null;
+
+            loadAngelItems("fill",sponsorGuid,angelType,appendToAngelItemTable);
+        });
+
+        var angelItems;
+
+
+        function loadAngelItems(action,sponsorGuid,angelType, callback) {
+
+            $.ajax({
+                url: "angel_item_json.php",
+                type: 'GET',
+                dataType: 'json',
+                async: 'false',
+                data: {"sponsor_guid": "f48225ca-6aef-11e4-834d-001d096d0d4e", "angelType": "available"},
+                success: function (result) {
+                    angelItems=result;
+
+                    $.each(angelItems.angel_items, function () {
+                        console.log(this);
+                    });
+                }
+            }).done(function (result) {
+                // Make sure the callback is a function​
+                if (typeof callback === "function") {
+                    // Execute the callback function and pass the parameters to it​
+                    callback(angelItems.angel_items);
+                }
+
+            }).fail(function (request, status, error) {
+                sponsor_result = null;
+                alert('Status Failed:' + status + ' Error:' + error);
+            }).always(function (result) {
+            });
+        }
+
+        function appendToAngelItemTable(ais, callback){
+
+            $.each(angelItems.angel_items, function () {
+                content = '<tr>';
+                content += '<td>'+this.angel_name+'</td>';
+                content += '<td>'+this.gender+'</td>';
+                content += '<td>'+this.age+'</td>';
+                content += '<td>'+this.item_name+'</td>';
+                content += '<td>'+this.item_desc+'</td>';
+                content += '<td>'+this.size+'</td>';
+                content += '<td>Sponsor</td>';
+                content += '</tr>';
+//        console.log(this);
+                $('#angle_item_table_id').append( '<tr><td>' + content + '</td></tr>' );
+            });
+
+        }
+    </script>
+</head>
+<body>
+<table data-role="table" id="angle_item_table_id" class="angel-list ui-responsive">
+    <thead>
+    <tr>
+        <th>N#</th>
+        <th>Gen</th>
+        <th>Age</th>
+        <th>Item</th>
+        <th>Item Desc</th>
+        <th>Size</th>
+        <th>Sponsor</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+</body>
+</html>
